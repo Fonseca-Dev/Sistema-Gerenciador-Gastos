@@ -4,10 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Setter;
-
+import lombok.Data;
 import java.time.LocalDateTime;
 
+
+@Data
 @Entity
 public class Usuario {
     @Id
@@ -16,13 +17,14 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
-    @Setter
     private LocalDateTime data;
+
+    public Usuario() {
+    }
 
     public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
     }
-
 }

@@ -24,19 +24,23 @@ public class UsuarioService {
         if (Objects.isNull(request)) {
             return new BaseResponse("Request está nulo.", HttpStatus.NO_CONTENT, null);
         }
+        // Verifica se o email já existe
+        if (repository.findByEmail(request.email()).isPresent()) {
+            return new BaseResponse("Email já cadastrado.", HttpStatus.CONFLICT, null);
+        }
         Usuario novoUsuario = UsuarioMapper.map(request);
         novoUsuario.setData(LocalDateTime.now());
         repository.save(novoUsuario);
         return new BaseResponse("Usuário criado com sucesso.", HttpStatus.CREATED, novoUsuario);
     }
 
-    public BaseResponse buscarUsuarioPorEmail(String email){
+    public BaseResponse buscarUsuarioPorEmail(final String email){
         if(repository.findByEmail(email).isEmpty()){
-            return new BaseResponse("Usuário não encontrado.",HttpStatus.NOT_FOUND,null);
+            return new BaseResponse("Usuário não encontrado.", HttpStatus.NOT_FOUND, null);
         }
-        Usuario usuario = repository.findByEmail(email).get();
-        return new BaseResponse("Usuário encontrado.",HttpStatus.OK,usuario);
+        return new BaseResponse("Usuário encontrado.", HttpStatus.OK, repository.findByEmail(email));
     }
+
 
     public BaseResponse listarUsuarios(){
         if(repository.findAll().isEmpty()){
@@ -46,14 +50,14 @@ public class UsuarioService {
     }
 
     public BaseResponse deletarUsuario(String email) {
-        var usuarioOpt = repository.findByEmail(email);
-        if(usuarioOpt.isEmpty()) {
+        if(repository.findByEmail(email).isEmpty()){
             return new BaseResponse("Usuário não encontrado.", HttpStatus.NOT_FOUND, null);
         }
 
-        Usuario usuario = usuarioOpt.get();
+        Usuario usuario = repository.findByEmail(email).get(); // agora funciona
         repository.delete(usuario);
-        return new BaseResponse("Usuário deletado com sucesso.", HttpStatus.OK, null);
+        return new BaseResponse("Usuário deletado com sucesso.", HttpStatus.OK, usuario);
     }
+
 
 }
