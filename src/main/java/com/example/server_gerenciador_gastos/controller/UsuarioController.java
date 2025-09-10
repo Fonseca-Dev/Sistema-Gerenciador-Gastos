@@ -22,6 +22,7 @@ public class UsuarioController {
         BaseResponse response = service.criarUsuario(request);
         return ResponseEntity.status(response.status()).body(response);
     }
+
     @GetMapping
     public ResponseEntity<BaseResponse> listarUsuarios() {
         BaseResponse response = service.listarUsuarios();
