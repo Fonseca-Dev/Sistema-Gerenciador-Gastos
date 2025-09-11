@@ -29,7 +29,7 @@ public class UsuarioService {
             return new BaseResponse("Email já cadastrado.", HttpStatus.CONFLICT, null);
         }
         Usuario novoUsuario = UsuarioMapper.map(request);
-        novoUsuario.setData(LocalDateTime.now());
+        novoUsuario.setDataCriacao(LocalDateTime.now());
         repository.save(novoUsuario);
         return new BaseResponse("Usuário criado com sucesso.", HttpStatus.CREATED, novoUsuario);
     }
