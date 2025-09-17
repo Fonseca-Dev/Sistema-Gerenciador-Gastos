@@ -1,5 +1,4 @@
 package com.example.server_gerenciador_gastos.entity;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,8 +7,6 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-
 @Data
 @Entity
 public class Usuario {

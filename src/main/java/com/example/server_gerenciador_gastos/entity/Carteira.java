@@ -34,4 +34,6 @@ public class Carteira {
     @JsonIgnoreProperties("carteira")
     private List<Transacao> transacoes = new ArrayList<>();
 
+    public Carteira() {
+    }
 }

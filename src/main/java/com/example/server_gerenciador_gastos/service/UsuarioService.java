@@ -1,6 +1,7 @@
 package com.example.server_gerenciador_gastos.service;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarUsuarioRequest;
+import com.example.server_gerenciador_gastos.dto.request.LoginUsuarioRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.entity.Usuario;
 import com.example.server_gerenciador_gastos.mapper.UsuarioMapper;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -57,6 +59,22 @@ public class UsuarioService {
         Usuario usuario = repository.findByEmail(email).get(); // agora funciona
         repository.delete(usuario);
         return new BaseResponse("Usuário deletado com sucesso.", HttpStatus.OK, usuario);
+    }
+
+    public BaseResponse loginPorEmailESenha(LoginUsuarioRequest request){
+        Optional<Usuario> usuarioOpt = repository.findByEmail(request.email());
+
+        if (usuarioOpt.isEmpty()) {
+            return new BaseResponse("Usuário não encontrado.", HttpStatus.NOT_FOUND, null);
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
+        if (!usuario.getSenha().equalsIgnoreCase(request.senha())){
+            return new BaseResponse("Senha incorreta.",HttpStatus.UNAUTHORIZED,null);
+        }
+
+        return new BaseResponse("Login efetuado com suceso.",HttpStatus.OK,usuario);
     }
 
 

@@ -2,5 +2,5 @@ package com.example.server_gerenciador_gastos.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record CriarUsuarioRequest(@NotBlank String nome, @NotBlank String email, @NotBlank String senha) {
+public record LoginUsuarioRequest(@NotBlank String email, @NotBlank String senha) {
 }

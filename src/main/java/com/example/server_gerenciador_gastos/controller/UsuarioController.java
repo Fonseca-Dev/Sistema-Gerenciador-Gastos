@@ -1,6 +1,7 @@
 package com.example.server_gerenciador_gastos.controller;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarUsuarioRequest;
+import com.example.server_gerenciador_gastos.dto.request.LoginUsuarioRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -38,6 +39,12 @@ public class UsuarioController {
     @DeleteMapping("/{email}")
     public ResponseEntity<BaseResponse> deletarUsuario(@PathVariable String email){
         BaseResponse response = service.deletarUsuario(email);
+        return ResponseEntity.status(response.status()).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<BaseResponse> loginPorEmailESenha(@RequestBody @Valid final LoginUsuarioRequest request){
+        BaseResponse response = service.loginPorEmailESenha(request);
         return ResponseEntity.status(response.status()).body(response);
     }
 }
