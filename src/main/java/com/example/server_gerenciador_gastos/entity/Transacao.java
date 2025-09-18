@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -22,6 +23,8 @@ public class Transacao {
     private BigDecimal valor;
     @NotBlank
     private String tipo;
+    @NotNull
+    private LocalDateTime dataTransacao;
 
     // Muitas transações pertencem a uma carteira
     @ManyToOne
@@ -33,4 +36,8 @@ public class Transacao {
     @JsonIgnoreProperties("transacoes")
     private Categoria categoria;
 
+    // Muitas transações podem ter a mesma conta
+    @ManyToOne
+    @JsonIgnoreProperties("transacoes")
+    private Conta conta;
 }

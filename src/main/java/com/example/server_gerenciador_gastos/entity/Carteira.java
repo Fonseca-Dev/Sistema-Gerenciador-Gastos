@@ -28,7 +28,7 @@ public class Carteira {
     // Muitas carteiras pertencem a um usuario
     @ManyToOne
     @JsonIgnoreProperties("carteiras")
-    private Usuario usuario;
+    private Conta conta;
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "carteira", cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties("carteira")
