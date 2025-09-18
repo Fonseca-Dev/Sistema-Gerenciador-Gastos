@@ -3,6 +3,7 @@ package com.example.server_gerenciador_gastos.service;
 import com.example.server_gerenciador_gastos.dto.request.CriarUsuarioRequest;
 import com.example.server_gerenciador_gastos.dto.request.LoginUsuarioRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
+import com.example.server_gerenciador_gastos.dto.response.LoginUsuarioResponse;
 import com.example.server_gerenciador_gastos.entity.Usuario;
 import com.example.server_gerenciador_gastos.mapper.UsuarioMapper;
 import com.example.server_gerenciador_gastos.repository.UsuarioRepository;
@@ -62,19 +63,15 @@ public class UsuarioService {
     }
 
     public BaseResponse loginPorEmailESenha(LoginUsuarioRequest request){
-        Optional<Usuario> usuarioOpt = repository.findByEmail(request.email());
-
-        if (usuarioOpt.isEmpty()) {
-            return new BaseResponse("Usuário não encontrado.", HttpStatus.NOT_FOUND, null);
-        }
-
-        Usuario usuario = usuarioOpt.get();
+        Usuario usuario = repository.findByEmail(request.email()).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
         if (!usuario.getSenha().equalsIgnoreCase(request.senha())){
             return new BaseResponse("Senha incorreta.",HttpStatus.UNAUTHORIZED,null);
         }
 
-        return new BaseResponse("Login efetuado com suceso.",HttpStatus.OK,usuario);
+        LoginUsuarioResponse loginUsuarioResponse = new LoginUsuarioResponse(usuario.getId());
+
+        return new BaseResponse("Login efetuado com suceso.",HttpStatus.OK,loginUsuarioResponse);
     }
 
 

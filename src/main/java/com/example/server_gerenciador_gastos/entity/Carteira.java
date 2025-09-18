@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class Carteira {
 
     @Id
@@ -25,15 +27,10 @@ public class Carteira {
     @NonNull
     private BigDecimal meta;
 
-    // Muitas carteiras pertencem a um usuario
+    // Muitas carteiras pertencem a uma conta
     @ManyToOne
     @JsonIgnoreProperties("carteiras")
-    private Usuario usuario;
+    private Conta conta;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "carteira", cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties("carteira")
-    private List<Transacao> transacoes = new ArrayList<>();
 
-    public Carteira() {
-    }
 }
