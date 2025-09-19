@@ -5,14 +5,12 @@ import com.example.server_gerenciador_gastos.dto.request.LoginUsuarioRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.dto.response.LoginUsuarioResponse;
 import com.example.server_gerenciador_gastos.entity.Usuario;
-import com.example.server_gerenciador_gastos.mapper.UsuarioMapper;
 import com.example.server_gerenciador_gastos.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -31,7 +29,10 @@ public class UsuarioService {
         if (repository.findByEmail(request.email()).isPresent()) {
             return new BaseResponse("Email já cadastrado.", HttpStatus.CONFLICT, null);
         }
-        Usuario novoUsuario = UsuarioMapper.map(request);
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(request.nome());
+        novoUsuario.setEmail(request.email());
+        novoUsuario.setSenha(request.senha());
         novoUsuario.setDataCriacao(LocalDateTime.now());
         repository.save(novoUsuario);
         return new BaseResponse("Usuário criado com sucesso.", HttpStatus.CREATED, novoUsuario);

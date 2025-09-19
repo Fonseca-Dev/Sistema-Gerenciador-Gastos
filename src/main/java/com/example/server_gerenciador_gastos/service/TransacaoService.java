@@ -12,6 +12,7 @@ import com.example.server_gerenciador_gastos.repository.TransacaoRepository;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,11 +81,19 @@ public class TransacaoService {
     }
 
     //READ
-    /*public BaseResponse listarTransacoesPorConta(String idConta) {
-        if(transacaoRepository.findByIdConta(idConta).isEmpty()){
-            return new BaseResponse("Conta não encontrada.", HttpStatus.NOT_FOUND, null);
+    public BaseResponse listarTransacoesPorConta(String idConta) {
+        List<Transacao> entradas = transacaoRepository.findByIdContaDestino(idConta);
+        List<Transacao> saidas = transacaoRepository.findByIdContaOrigem(idConta);
+
+        List<Transacao> transacoes = new ArrayList<>();
+        transacoes.addAll(entradas);
+        transacoes.addAll(saidas);
+
+        if(transacoes.isEmpty()){
+            return new BaseResponse("Nenhuma transação encontrada para essa conta.",HttpStatus.NOT_FOUND,null);
         }
-        return new BaseResponse("Transações encontradas.",HttpStatus.OK,transacaoRepository.findByIdConta(idConta));
-    }*/
+        return new BaseResponse("Transações encontradas.",HttpStatus.OK,transacoes);
+
+    }
 
 }
