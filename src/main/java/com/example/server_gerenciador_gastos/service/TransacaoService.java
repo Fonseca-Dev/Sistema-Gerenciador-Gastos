@@ -80,11 +80,11 @@ public class TransacaoService {
     }
 
     //READ
-    public BaseResponse listarTransacoes() {
-        List<Transacao> transacoes = transacaoRepository.findAll();
-        if (transacoes.isEmpty()) {
-            return new BaseResponse("Nenhuma transação encontrada.", HttpStatus.NOT_FOUND, null);
+    /*public BaseResponse listarTransacoesPorConta(String idConta) {
+        if(transacaoRepository.findByIdConta(idConta).isEmpty()){
+            return new BaseResponse("Conta não encontrada.", HttpStatus.NOT_FOUND, null);
         }
-        return new BaseResponse("Transações encontradas.", HttpStatus.OK, transacoes);
-    }
+        return new BaseResponse("Transações encontradas.",HttpStatus.OK,transacaoRepository.findByIdConta(idConta));
+    }*/
+
 }

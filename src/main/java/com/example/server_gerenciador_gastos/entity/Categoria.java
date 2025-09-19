@@ -3,8 +3,6 @@ package com.example.server_gerenciador_gastos.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +19,10 @@ public class Categoria {
     private String id;
     @NotBlank
     private String nome;
+
+    // Uma categoria pode ter várias transações
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("categoria")  // evita recursão infinita na serialização
+    private List<Transacao> transacoes = new ArrayList<>();
 
 }

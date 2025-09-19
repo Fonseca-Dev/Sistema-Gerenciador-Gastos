@@ -32,5 +32,10 @@ public class Carteira {
     @JsonIgnoreProperties("carteiras")
     private Conta conta;
 
+    // Uma carteira pode ter várias transações
+    @OneToMany(mappedBy = "carteira", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("carteira")  // evita recursão infinita na serialização
+    private List<Transacao> transacoes = new ArrayList<>();
+
 
 }
