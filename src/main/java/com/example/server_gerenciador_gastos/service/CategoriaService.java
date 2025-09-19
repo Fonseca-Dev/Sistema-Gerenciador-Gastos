@@ -1,14 +1,13 @@
 package com.example.server_gerenciador_gastos.service;
 
-import com.example.server_gerenciador_gastos.dto.CategoriaDTO;  // Importando o DTO
+import com.example.server_gerenciador_gastos.dto.CategoriaDTO;
 import com.example.server_gerenciador_gastos.entity.Categoria;
 import com.example.server_gerenciador_gastos.mapper.CategoriaMapper;
 import com.example.server_gerenciador_gastos.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,57 +17,58 @@ import java.util.stream.Collectors;
 public class CategoriaService {
 
     @Autowired
-    CategoriaRepository categoriaRepository;
+    private CategoriaRepository categoriaRepository;
 
     @Autowired
-    CategoriaMapper categoriaMapper;  // Usando o mapper
+    private CategoriaMapper categoriaMapper;
 
-    // GET
-
-    public ResponseEntity<List<CategoriaDTO>> getAll() {
-        List<Categoria> categorias = categoriaRepository.findAll();
-
-        // Converte todas as categorias para DTO
-        List<CategoriaDTO> categoriaDTOs = categorias.stream()
+    // GET ALL
+    public List<CategoriaDTO> getAll() {
+        return categoriaRepository.findAll()
+                .stream()
                 .map(categoriaMapper::toDTO)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(categoriaDTOs);
     }
 
-    public ResponseEntity<CategoriaDTO> findByNome(String nome) {
-        Optional<Categoria> categoriaOpt = categoriaRepository.findByNome(nome);
-        return categoriaOpt
-                .map(categoria -> ResponseEntity.ok(categoriaMapper.toDTO(categoria)))  // Mapeando para DTO
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    // GET BY NOME
+    public Optional<CategoriaDTO> findByNome(String nome) {
+        return categoriaRepository.findByNome(nome)
+                .map(categoriaMapper::toDTO);
     }
 
     // POST
+    public Optional<CategoriaDTO> cadastrarCategoria(CategoriaDTO categoriaDTO) {
+        Optional<Categoria> existente = categoriaRepository.findByNome(categoriaDTO.getNome());
+        if (existente.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria já existe!");
+        }
 
-    public ResponseEntity<CategoriaDTO> post(CategoriaDTO categoriaDTO) {
-        Categoria categoria = categoriaMapper.toEntity(categoriaDTO); // Convertendo DTO para entidade
+        Categoria categoria = categoriaMapper.toEntity(categoriaDTO);
+        categoria.setId(null); // força criação de novo ID
+
         Categoria categoriaSalva = categoriaRepository.save(categoria);
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaMapper.toDTO(categoriaSalva));  // Retorna o DTO
+        return Optional.ofNullable(categoriaMapper.toDTO(categoriaSalva));
     }
 
     // PUT
-
-    public ResponseEntity<CategoriaDTO> put(CategoriaDTO categoriaDTO) {
-        if (categoriaRepository.existsById(categoriaDTO.getId())) {
-            Categoria categoria = categoriaMapper.toEntity(categoriaDTO);  // Convertendo DTO para entidade
-            Categoria categoriaAtualizada = categoriaRepository.save(categoria);
-            return ResponseEntity.ok(categoriaMapper.toDTO(categoriaAtualizada));  // Retorna o DTO atualizado
+    public Optional<CategoriaDTO> atualizarCategoria(CategoriaDTO categoriaDTO) {
+        if (categoriaDTO.getId() == null || !categoriaRepository.existsById(categoriaDTO.getId())) {
+            return Optional.empty();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        Categoria categoria = categoriaMapper.toEntity(categoriaDTO);
+        Categoria categoriaAtualizada = categoriaRepository.save(categoria);
+        return Optional.ofNullable(categoriaMapper.toDTO(categoriaAtualizada));
     }
 
     // DELETE
-
-    public void delete(String id) {
+    public boolean delete(String id) {
         Optional<Categoria> checkId = categoriaRepository.findById(id);
 
-        if (checkId.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        else
-            categoriaRepository.deleteById(id);
+        if (checkId.isEmpty()) {
+            return false;
+        }
+        categoriaRepository.deleteById(id);
+        return true;
     }
 }
