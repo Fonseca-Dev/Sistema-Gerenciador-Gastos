@@ -20,15 +20,12 @@ public class Categoria {
     @NotBlank
     private String nome;
 
-
-
     // Uma categoria pode ter várias transações
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("categoria")  // evita recursão infinita na serialização
     private List<Transacao> transacoes = new ArrayList<>();
 
-    public Categoria(String nome, List<Transacao> transacoes) {
+    public Categoria(String nome) {
         this.nome = nome;
-        this.transacoes = transacoes;
     }
 }
