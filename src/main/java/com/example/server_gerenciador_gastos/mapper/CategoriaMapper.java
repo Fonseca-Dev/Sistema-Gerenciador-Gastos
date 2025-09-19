@@ -4,10 +4,12 @@ import com.example.server_gerenciador_gastos.dto.CategoriaDTO;
 import com.example.server_gerenciador_gastos.entity.Categoria;
 import com.example.server_gerenciador_gastos.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class CategoriaMapper {
     @Autowired
     CategoriaRepository categoriaRepository;

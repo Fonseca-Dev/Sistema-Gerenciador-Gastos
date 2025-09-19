@@ -16,7 +16,6 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @NotBlank
     private String id;
 
     @NotBlank

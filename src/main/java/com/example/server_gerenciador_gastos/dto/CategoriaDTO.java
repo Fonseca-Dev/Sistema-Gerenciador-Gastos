@@ -5,12 +5,12 @@ import java.util.List;
 public class CategoriaDTO {
     private String id;
     private String nome;
-    private List<String> TransactionIds;
+    private List<String> transactionIds;
 
     public CategoriaDTO(String id, String nome, List<String> transactionIds) {
         this.id = id;
         this.nome = nome;
-        TransactionIds = transactionIds;
+        transactionIds = transactionIds;
     }
 
     public String getId() {
@@ -30,10 +30,10 @@ public class CategoriaDTO {
     }
 
     public List<String> getTransactionIds() {
-        return TransactionIds;
+        return transactionIds;
     }
 
     public void setTransactionIds(List<String> transactionIds) {
-        TransactionIds = transactionIds;
+        transactionIds = transactionIds;
     }
 }
