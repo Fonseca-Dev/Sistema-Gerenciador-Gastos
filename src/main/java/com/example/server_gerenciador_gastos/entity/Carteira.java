@@ -24,18 +24,24 @@ public class Carteira {
     private String nome;
     @NotNull
     private BigDecimal saldo;
-    @NonNull
+    @NotNull
     private BigDecimal meta;
 
-    // Muitas carteiras pertencem a uma conta
+    /// Muitas carteiras pertencem a uma conta
     @ManyToOne
     @JsonIgnoreProperties("carteiras")
     private Conta conta;
 
-    // Uma carteira pode ter várias transações
-    @OneToMany(mappedBy = "carteira", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("carteira")  // evita recursão infinita na serialização
+    /// Uma carteira registra muitas transações
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "carteira", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties("carteira")
     private List<Transacao> transacoes = new ArrayList<>();
 
 
+    public Carteira(String nome, BigDecimal saldo, BigDecimal meta) {
+        this.nome = nome;
+        this.saldo = saldo;
+        this.meta = meta;
+    }
 }
+
