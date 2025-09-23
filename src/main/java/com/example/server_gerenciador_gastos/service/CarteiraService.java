@@ -4,24 +4,25 @@ package com.example.server_gerenciador_gastos.service;
 import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.entity.Carteira;
-import com.example.server_gerenciador_gastos.entity.Transacao;
 import com.example.server_gerenciador_gastos.mapper.CarteiraMapper;
 import com.example.server_gerenciador_gastos.repository.CarteiraRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
 public class CarteiraService {
 
-    private final CarteiraRepository repository;
+    private final CarteiraMapper carteiraMapper;
+    private final CarteiraRepository carteiraRepository;
 
-    public CarteiraService(CarteiraRepository repository) {
-        this.repository = repository;
+    public CarteiraService(CarteiraMapper carteiraMapper, CarteiraRepository carteiraRepository) {
+        this.carteiraMapper = carteiraMapper;
+        this.carteiraRepository = carteiraRepository;
     }
 
 
@@ -30,18 +31,42 @@ public class CarteiraService {
             return new BaseResponse("Request está nulo.", HttpStatus.NO_CONTENT, null);
         }
         Carteira novaCarteira = CarteiraMapper.map(request);
-        repository.save(novaCarteira);
+        carteiraRepository.save(novaCarteira);
         return new BaseResponse("Carteira criada com sucesso!", HttpStatus.CREATED, novaCarteira);
     }
 
     public BaseResponse listarCarteiras() {
-        if (repository.findAll().isEmpty()) {
+        if (carteiraRepository.findAll().isEmpty()) {
             return new BaseResponse("Nenhuma carteira cadastrada.", HttpStatus.NOT_FOUND, null);
         }
-        return new BaseResponse("Carteiras cadastradas encontradas.", HttpStatus.OK, repository.findAll());
+        return new BaseResponse("Carteiras cadastradas encontradas.", HttpStatus.OK, carteiraRepository.findAll());
+    }
+
+    /// bgl novo
+    public void deleteCarteira(String id) {
+        Optional<Carteira> checkId = carteiraRepository.findById(id);
+        if (checkId.isEmpty()) {
+            return;
+        }
+        carteiraRepository.deleteById(id);
     }
 
 
+    public Optional<Carteira> atualizarCarteira(UUID id, CriarCarteiraRequest requestDTO) {
+        Optional<Carteira> optionalCarteira = carteiraRepository.findById(id.toString());
+
+        if (optionalCarteira.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Carteira carteiraExistente = optionalCarteira.get();
+        carteiraExistente.setNome(requestDTO.nome());
+        carteiraExistente.setSaldo(requestDTO.saldo());
+        carteiraExistente.setMeta(requestDTO.meta());
+
+        return Optional.of(carteiraRepository.save(carteiraExistente));
+
+    }
 
 
 

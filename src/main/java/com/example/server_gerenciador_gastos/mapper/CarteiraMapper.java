@@ -9,4 +9,8 @@ public class CarteiraMapper {
     public static Carteira map(final CriarCarteiraRequest request){
         return new Carteira(request.nome(), request.saldo(), request.meta());
     }
+
+    public Carteira toEntity(Carteira carteira) {
+        return carteira;
+    }
 }
