@@ -42,4 +42,17 @@ public class TransacaoController {
         }
         return ResponseEntity.status(status).body(response);
     }
+
+    @GetMapping("/conta/{idConta}/mes/{ano}/{mes}")
+    public ResponseEntity<ListarTransacoesResponse> listarTransacoesPorContaEMes(@PathVariable String idConta, @PathVariable int ano, @PathVariable int mes){
+        ListarTransacoesResponse response = service.listarTransacoesPorContaEMes(idConta,ano, mes);
+        HttpStatus status = null;
+        if(response.mensagem().equals("Transações encontradas para o mês especificado.")){
+            status = HttpStatus.OK;
+        }
+        else {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status).body(response);
+    }
 }

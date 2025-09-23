@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Service
 public class TransacaoService {
     private final CarteiraRepository carteiraRepository;
@@ -134,6 +136,31 @@ public class TransacaoService {
         }
 
         return new ListarTransacoesResponse("Transações encontradas.", transacoes);
+    }
+
+    public ListarTransacoesResponse listarTransacoesPorContaEMes(String idConta, int ano, int mes) {
+        List<Transacao> entradas = transacaoRepository.findByIdContaDestino(idConta);
+        List<Transacao> saidas = transacaoRepository.findByIdContaOrigem(idConta);
+
+        List<Transacao> todasTransacoes = new ArrayList<>();
+        todasTransacoes.addAll(entradas);
+        todasTransacoes.addAll(saidas);
+
+        List<Transacao> transacoesFiltradas = todasTransacoes.stream()
+                .filter(t -> t.getData().getYear() == ano && t.getData().getMonthValue() == mes)
+                .collect(Collectors.toList());
+
+        if (transacoesFiltradas.isEmpty()) {
+            return new ListarTransacoesResponse(
+                    "Nenhuma transação encontrada no mês especificado.",
+                    null
+            );
+        }
+
+        return new ListarTransacoesResponse(
+                "Transações encontradas para o mês especificado.",
+                transacoesFiltradas
+        );
     }
 
 }

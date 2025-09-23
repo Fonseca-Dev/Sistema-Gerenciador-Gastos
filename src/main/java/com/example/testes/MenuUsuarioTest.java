@@ -26,6 +26,7 @@ public class MenuUsuarioTest {
             System.out.println("6 - Buscar contas por ID de usuario");
             System.out.println("7 - Criar transacao");
             System.out.println("8 - Listar transacoes por conta");
+            System.out.println("9 - Listar transações por mês");
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
             opcao = sc.nextInt();
@@ -40,6 +41,7 @@ public class MenuUsuarioTest {
                 case 6 -> buscarContasPorIdUsuario();
                 case 7 -> criarTransacao();
                 case 8 -> listarTransacoesPorConta();
+                case 9 -> listarTransacoesPorContaEMes();
                 case 0 -> System.out.println("Saindo...");
                 default -> System.out.println("Opcao invalida!");
             }
@@ -220,5 +222,24 @@ public class MenuUsuarioTest {
         String id = sc.nextLine();
         ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/usuario/contas/" + id, String.class);
         System.out.println(response.getBody());
+    }
+
+    private static void listarTransacoesPorContaEMes() {
+        System.out.print("ID da conta: ");
+        String idConta = sc.nextLine();
+        System.out.print("Mês: ");
+        int mes = sc.nextInt();
+        sc.nextLine();
+        System.out.print("Ano: ");
+        int ano = sc.nextInt();
+        sc.nextLine();
+
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/transacao/conta/" + idConta + "/mes/" + ano + "/" + mes, String.class);
+            System.out.println("Resposta: " + response.getBody());
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
