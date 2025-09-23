@@ -1,21 +1,19 @@
 package com.example.server_gerenciador_gastos.service;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarTransacaoRequest;
-import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
-import com.example.server_gerenciador_gastos.dto.response.TransacaoResponse;
-import com.example.server_gerenciador_gastos.entity.Carteira;
-import com.example.server_gerenciador_gastos.entity.Conta;
-import com.example.server_gerenciador_gastos.entity.Transacao;
+import com.example.server_gerenciador_gastos.dto.response.CriarTransacaoResponse;
+import com.example.server_gerenciador_gastos.dto.response.ListarTransacoesResponse;
+import com.example.server_gerenciador_gastos.entity.*;
 import com.example.server_gerenciador_gastos.repository.CarteiraRepository;
 import com.example.server_gerenciador_gastos.repository.ContaRepository;
 import com.example.server_gerenciador_gastos.repository.TransacaoRepository;
-import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+@Service
 public class TransacaoService {
     private final CarteiraRepository carteiraRepository;
     private final ContaRepository contaRepository;
@@ -31,57 +29,99 @@ public class TransacaoService {
     }
 
     //CREATE
-    public BaseResponse criarTransacao(CriarTransacaoRequest request) {
-        if (Objects.isNull(request)) {
-            return new BaseResponse("Request está nulo.", HttpStatus.NOT_FOUND, null);
+    public CriarTransacaoResponse criarTransacao(CriarTransacaoRequest request) {
+        if (Objects.isNull(request) || request.valor().compareTo(BigDecimal.ZERO) <= 0) {
+            return new CriarTransacaoResponse("VALOR_INVALIDO", null);
         }
 
-        Conta contaOrigem = contaRepository.findById(request.idContaOrigem()).orElseThrow(() -> new RuntimeException("Conta não encontrada."));
+        Transacao transacao = new Transacao(request.valor());
 
-        Transacao transacao = new Transacao();
-        transacao.setValor(request.valor());
-        transacao.setTipo(request.tipo());
-        transacao.setData(LocalDateTime.now());
-        transacao.setIdContaOrigem(request.idContaOrigem());
+        switch (request.tipo().toUpperCase()) {
+            case "DEPOSITO": {
+                if (request.idContaDestino() == null || request.idContaDestino().isEmpty()) {
+                    return new CriarTransacaoResponse("CONTA_DESTINO_OBRIGATORIA", null);
+                }
+                Conta contaDestino = contaRepository.findById(request.idContaDestino()).orElse(null);
+                if (contaDestino == null) {
+                    return new CriarTransacaoResponse("CONTA_DESTINO_NAO_ENCONTRADA", null);
+                }
+                transacao.processarDeposito(contaDestino);
+                break;
+            }
+            case "SAQUE": {
+                if (request.idContaOrigem() == null || request.idContaOrigem().isEmpty()) {
+                    return new CriarTransacaoResponse("CONTA_ORIGEM_OBRIGATORIA", null);
+                }
+                Conta contaOrigem = contaRepository.findById(request.idContaOrigem()).orElse(null);
+                if (contaOrigem == null) {
+                    return new CriarTransacaoResponse("CONTA_ORIGEM_NAO_ENCONTRADA", null);
+                }
+                transacao.processarSaque(contaOrigem);
+                break;
+            }
+            case "CONTA_CARTEIRA": {
+                if (request.idContaOrigem() == null || request.idContaOrigem().isEmpty()) {
+                    return new CriarTransacaoResponse("CONTA_ORIGEM_OBRIGATORIA", null);
+                }
+                Conta contaOrigem = contaRepository.findById(request.idContaOrigem()).orElse(null);
+                if (contaOrigem == null) {
+                    return new CriarTransacaoResponse("CONTA_ORIGEM_NAO_ENCONTRADA", null);
+                }
+                if (request.idCarteiraDestino() == null || request.idCarteiraDestino().isEmpty()) {
+                    return new CriarTransacaoResponse("CARTEIRA_DESTINO_OBRIGATORIA", null);
+                }
+                Carteira carteiraDestino = carteiraRepository.findById(request.idCarteiraDestino()).orElse(null);
+                if (carteiraDestino == null) {
+                    return new CriarTransacaoResponse("CARTEIRA_DESTINO_NAO_ENCONTRADA", null);
+                }
+                transacao.processarContaParaCarteira(contaOrigem,carteiraDestino);
+                break;
+            }
+            case "CARTEIRA_CONTA": {
+                if (request.idCarteiraOrigem() == null || request.idCarteiraOrigem().isEmpty()) {
+                    return new CriarTransacaoResponse("CARTEIRA_ORIGEM_OBRIGATORIA", null);
+                }
+                Carteira carteiraOrigem = carteiraRepository.findById(request.idCarteiraOrigem()).orElse(null);
+                if (carteiraOrigem == null) {
+                    return new CriarTransacaoResponse("CARTEIRA_ORIGEM_NAO_ENCONTRADA", null);
+                }
+                if (request.idContaDestino() == null || request.idContaDestino().isEmpty()) {
+                    return new CriarTransacaoResponse("CONTA_DESTINO_OBRIGATORIA", null);
+                }
+                Conta contaDestino = contaRepository.findById(request.idContaDestino()).orElse(null);
+                if (contaDestino == null) {
+                    return new CriarTransacaoResponse("CONTA_DESTINO_NAO_ENCONTRADA", null);
+                }
+                transacao.processarCarteiraParaConta(carteiraOrigem,contaDestino);
+                break;
+            }
+            case "TRANSFERENCIA_CONTA": {
+                if (request.idContaOrigem() == null || request.idContaOrigem().isEmpty()) {
+                    return new CriarTransacaoResponse("CONTA_ORIGEM_OBRIGATORIA", null);
+                }
+                Conta contaOrigem = contaRepository.findById(request.idContaOrigem()).orElse(null);
+                if (contaOrigem == null) {
+                    return new CriarTransacaoResponse("CONTA_ORIGEM_NAO_ENCONTRADA", null);
+                }
+                if (request.idContaDestino() == null || request.idContaDestino().isEmpty()) {
+                    return new CriarTransacaoResponse("CONTA_DESTINO_OBRIGATORIA", null);
+                }
+                Conta contaDestino = contaRepository.findById(request.idContaDestino()).orElse(null);
+                transacao.processarTransferenciaConta(contaOrigem,contaDestino);
+                break;
+            }
+            default:
+                return new CriarTransacaoResponse("Tipo de Transação Inválida.", null);
 
-        if ("CONTA_CONTA".equalsIgnoreCase(request.tipo())) {
-            Conta contaDestino = contaRepository.findById(request.idContaDestino()).orElseThrow(() -> new RuntimeException("Conta de destino não encontrada."));
-            transacao.setIdContaDestino(request.idContaDestino());
-
-
-            //Atualiza saldos
-            contaDestino.setSaldo(contaDestino.getSaldo().add(request.valor()));
-            contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(request.valor()));
-            contaRepository.save(contaDestino);
-            contaRepository.save(contaOrigem);
-        } else if ("CONTA_CARTEIRA".equalsIgnoreCase(request.tipo())) {
-            Carteira carteiraDestino = carteiraRepository.findById(request.idCarteiraDestino()).orElseThrow(() -> new RuntimeException("Carteira de destino não encontrada."));
-            transacao.setCarteira(carteiraDestino);
-
-            //Atualiza saldos
-            carteiraDestino.setSaldo(carteiraDestino.getSaldo().add(request.valor()));
-            contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(request.valor()));
-            carteiraRepository.save(carteiraDestino);
-            contaRepository.save(contaOrigem);
         }
 
-        transacaoRepository.save(transacao);
-
-        TransacaoResponse response = new TransacaoResponse(
-                transacao.getId(),
-                transacao.getValor(),
-                transacao.getTipo(),
-                transacao.getIdContaOrigem(),
-                transacao.getIdContaDestino(),
-                transacao.getCarteira() != null ? transacao.getCarteira().getId() : null,
-                transacao.getData()
-        );
-
-        return new BaseResponse("Transação criada com sucesso.", HttpStatus.CREATED, response);
+        transacao.processar();
+        Transacao transacaoSalva = transacaoRepository.save(transacao);
+        return new CriarTransacaoResponse("SUCESSO", transacaoSalva.getId());
     }
 
     //READ
-    public BaseResponse listarTransacoesPorConta(String idConta) {
+    public ListarTransacoesResponse listarTransacoesPorConta(String idConta) {
         List<Transacao> entradas = transacaoRepository.findByIdContaDestino(idConta);
         List<Transacao> saidas = transacaoRepository.findByIdContaOrigem(idConta);
 
@@ -89,11 +129,11 @@ public class TransacaoService {
         transacoes.addAll(entradas);
         transacoes.addAll(saidas);
 
-        if(transacoes.isEmpty()){
-            return new BaseResponse("Nenhuma transação encontrada para essa conta.",HttpStatus.NOT_FOUND,null);
+        if (transacoes.isEmpty()) {
+            return new ListarTransacoesResponse("Nenhuma transação encontrada para essa conta.", null);
         }
-        return new BaseResponse("Transações encontradas.",HttpStatus.OK,transacoes);
 
+        return new ListarTransacoesResponse("Transações encontradas.", transacoes);
     }
 
 }

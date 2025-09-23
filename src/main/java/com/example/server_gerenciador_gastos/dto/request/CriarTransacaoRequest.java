@@ -8,10 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record CriarTransacaoRequest(
-        @NotNull BigDecimal valor,
-        @NotBlank String tipo,
-        @NotBlank String idContaOrigem,
+        BigDecimal valor,
+        String tipo,
+        String idContaOrigem,
         String idContaDestino,
+        String idCarteiraOrigem,
         String idCarteiraDestino
 ) {
 }

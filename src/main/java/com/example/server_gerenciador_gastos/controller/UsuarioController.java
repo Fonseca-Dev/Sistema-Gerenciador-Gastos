@@ -47,4 +47,10 @@ public class UsuarioController {
         BaseResponse response = service.loginPorEmailESenha(request);
         return ResponseEntity.status(response.status()).body(response);
     }
+
+    @GetMapping("/contas/{id}")
+    public ResponseEntity<BaseResponse> buscarContasPorIdUsuario(@PathVariable @Valid String id){
+        BaseResponse response = service.buscarContasPorIdUsuario(id);
+        return ResponseEntity.status(response.status()).body(response);
+    }
 }
