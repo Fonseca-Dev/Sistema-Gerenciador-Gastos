@@ -1,6 +1,8 @@
 package com.example.testes;
 
+import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
 import com.example.server_gerenciador_gastos.dto.request.CriarTransacaoRequest;
+import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.dto.response.CriarTransacaoResponse;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -15,35 +17,49 @@ public class MenuUsuarioTest {
     private static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        int opcao;
+        int opcao=1;
         do {
-            System.out.println("===== MENU USUARIO =====");
-            System.out.println("1 - Cadastrar usuario");
-            System.out.println("2 - Listar usuarios");
-            System.out.println("3 - Buscar usuario por email");
-            System.out.println("4 - Deletar usuario");
-            System.out.println("5 - Login usuario");
-            System.out.println("6 - Buscar contas por ID de usuario");
-            System.out.println("7 - Criar transacao");
-            System.out.println("8 - Listar transacoes por conta");
-            System.out.println("9 - Listar transações por mês");
-            System.out.println("0 - Sair");
-            System.out.print("Escolha: ");
-            opcao = sc.nextInt();
-            sc.nextLine();
+            try {
 
-            switch (opcao) {
-                case 1 -> cadastrarUsuario();
-                case 2 -> listarUsuarios();
-                case 3 -> buscarUsuarioPorEmail();
-                case 4 -> deletarUsuario();
-                case 5 -> loginUsuario();
-                case 6 -> buscarContasPorIdUsuario();
-                case 7 -> criarTransacao();
-                case 8 -> listarTransacoesPorConta();
-                case 9 -> listarTransacoesPorContaEMes();
-                case 0 -> System.out.println("Saindo...");
-                default -> System.out.println("Opcao invalida!");
+
+                System.out.println("===== MENU USUARIO =====");
+                System.out.println("1 - Cadastrar usuario");
+                System.out.println("2 - Listar usuarios");
+                System.out.println("3 - Buscar usuario por email");
+                System.out.println("4 - Deletar usuario");
+                System.out.println("5 - Login usuario");
+                System.out.println("6 - Buscar contas por ID de usuario");
+                System.out.println("7 - Criar transacao");
+                System.out.println("8 - Listar transacoes por conta");
+                System.out.println("9 - Listar transações por mês");
+                System.out.println("10 - Criar carteira");
+                System.out.println("11 - Listar carteiras");
+                System.out.println("12 - Buscar carteiras por conta");
+                System.out.println("13 - Deletar carteiras");
+                System.out.println("0 - Sair");
+                System.out.print("Escolha: ");
+                opcao = sc.nextInt();
+                sc.nextLine();
+
+                switch (opcao) {
+                    case 1 -> cadastrarUsuario();
+                    case 2 -> listarUsuarios();
+                    case 3 -> buscarUsuarioPorEmail();
+                    case 4 -> deletarUsuario();
+                    case 5 -> loginUsuario();
+                    case 6 -> buscarContasPorIdUsuario();
+                    case 7 -> criarTransacao();
+                    case 8 -> listarTransacoesPorConta();
+                    case 9 -> listarTransacoesPorContaEMes();
+                    case 10 -> criarCarteira();
+                    case 11 -> listarCarteiras();
+                    case 12 -> buscarCarteirasPorConta();
+                    case 13 -> deletarCarteira();
+                    case 0 -> System.out.println("Saindo...");
+                    default -> System.out.println("Opcao invalida!");
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
         } while (opcao != 0);
     }
@@ -241,5 +257,56 @@ public class MenuUsuarioTest {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private static void criarCarteira(){
+        System.out.print("ID da conta: ");
+        String idConta = sc.nextLine();
+        System.out.print("Nome da carteira: ");
+        String nomeCarteira = sc.nextLine();
+        System.out.print("Meta da carteira: ");
+        BigDecimal metaCarteira = sc.nextBigDecimal();
+
+        CriarCarteiraRequest request = new CriarCarteiraRequest(nomeCarteira, BigDecimal.valueOf(0), metaCarteira, idConta);
+
+        /// otros bgl
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<CriarCarteiraRequest> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<BaseResponse> response = restTemplate.postForEntity(
+                    BASE_URL + "/carteiras",
+                    entity,
+                    BaseResponse.class
+            );
+            System.out.println("Resposta: " + response.getBody());
+
+        } catch (Exception e) {
+            // Captura qualquer outro erro inesperado
+            System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
+        }
+
+    }
+
+    private static void listarCarteiras() {
+        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/carteiras", String.class);
+        System.out.println(response.getBody());
+    }
+
+
+    private static void buscarCarteirasPorConta(){ /// n ta funcionando
+        System.out.print("ID da conta: ");
+        String id = sc.nextLine();
+        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/contas/"+id+"/carteiras", String.class);
+        System.out.println(response.getBody());
+    }
+    private static void deletarCarteira(){
+        System.out.print("Id da carteira: ");
+        String id = sc.nextLine();
+        restTemplate.delete(BASE_URL + "/carteiras/" + id);
+        System.out.println("Usuário deletado (se existia).");
     }
 }

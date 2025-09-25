@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class Carteira {
     private BigDecimal saldo;
     @NotNull
     private BigDecimal meta;
+    String IdConta;
 
     /// Muitas carteiras pertencem a uma conta
     @ManyToOne
@@ -38,10 +38,11 @@ public class Carteira {
     private List<Transacao> transacoes = new ArrayList<>();
 
 
-    public Carteira(String nome, BigDecimal saldo, BigDecimal meta) {
+    public Carteira(String nome, BigDecimal saldo, BigDecimal meta, String IdConta) {
         this.nome = nome;
         this.saldo = saldo;
         this.meta = meta;
+        this.IdConta = IdConta;
     }
 }
 

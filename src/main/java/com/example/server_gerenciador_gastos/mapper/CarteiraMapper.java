@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CarteiraMapper {
     public static Carteira map(final CriarCarteiraRequest request){
-        return new Carteira(request.nome(), request.saldo(), request.meta());
+        return new Carteira(request.nome(), request.saldo(), request.meta(), request.idConta());
     }
 
     public Carteira toEntity(Carteira carteira) {

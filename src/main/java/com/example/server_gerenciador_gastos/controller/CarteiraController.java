@@ -3,8 +3,10 @@ package com.example.server_gerenciador_gastos.controller;
 import com.example.server_gerenciador_gastos.dto.CategoriaDTO;
 import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
+import com.example.server_gerenciador_gastos.dto.response.ListarTransacoesResponse;
 import com.example.server_gerenciador_gastos.entity.Carteira;
 import com.example.server_gerenciador_gastos.service.CarteiraService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ public class CarteiraController {
     public CarteiraController(CarteiraService carteiraService) {
         this.carteiraService = carteiraService;
     }
+
     @PostMapping
     public ResponseEntity<BaseResponse> criarCarteira(@RequestBody @Valid final CriarCarteiraRequest request){
         BaseResponse response = carteiraService.criarCarteira(request);
@@ -33,23 +36,24 @@ public class CarteiraController {
 
     @GetMapping
     public ResponseEntity<BaseResponse> buscarCarteiras(){
+        // A lógica do serviço já deve retornar o BaseResponse
         return ResponseEntity.ok(carteiraService.listarCarteiras());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<BaseResponse> atualizarCarteira(
+            @PathVariable UUID id, // Padronizado para UUID
+            @RequestBody @Valid CriarCarteiraRequest requestDTO) {
+
+        return carteiraService.atualizarCarteira(id, requestDTO)
+                .map(carteiraAtualizada -> new BaseResponse("Carteira atualizada com sucesso.", HttpStatus.OK, carteiraAtualizada))
+                .map(response -> ResponseEntity.ok(response))
+                .orElse(new ResponseEntity<>(new BaseResponse("Carteira não encontrada.", HttpStatus.NOT_FOUND, null), HttpStatus.NOT_FOUND));
+    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
         carteiraService.deleteCarteira(id);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Carteira> atualizarCarteira(
-            @PathVariable UUID id,
-            @RequestBody @Valid CriarCarteiraRequest requestDTO) {
-
-        return carteiraService.atualizarCarteira(id, requestDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
     }
 }

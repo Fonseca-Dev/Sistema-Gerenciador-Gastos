@@ -3,15 +3,15 @@ package com.example.server_gerenciador_gastos.service;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
+import com.example.server_gerenciador_gastos.dto.response.ListarTransacoesResponse;
 import com.example.server_gerenciador_gastos.entity.Carteira;
+import com.example.server_gerenciador_gastos.entity.Transacao;
 import com.example.server_gerenciador_gastos.mapper.CarteiraMapper;
 import com.example.server_gerenciador_gastos.repository.CarteiraRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -68,15 +68,9 @@ public class CarteiraService {
 
     }
 
-
-
-
-
-
-
-
-
-
+    public List<Carteira> listarCarteirasPorConta(String idConta) {
+        return carteiraRepository.findByContaId(idConta);
+    }
 
 /*
     public BigDecimal gastoMensal(List<Transacao> transacoes, int mes, int ano){
