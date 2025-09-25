@@ -1,7 +1,5 @@
 package com.example.server_gerenciador_gastos.dto.request;
 
-import com.example.server_gerenciador_gastos.entity.Usuario;
-
 import java.math.BigDecimal;
 
 public record CriarContaRequest(
