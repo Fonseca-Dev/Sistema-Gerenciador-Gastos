@@ -10,7 +10,6 @@ public record CriarCarteiraRequest(
         @NotBlank String nome,
         @NotNull BigDecimal saldo,
         @NotNull BigDecimal meta,
-
         String idConta
 )
 {

@@ -4,8 +4,11 @@ package com.example.server_gerenciador_gastos.service;
 import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.entity.Carteira;
+import com.example.server_gerenciador_gastos.entity.Conta;
 import com.example.server_gerenciador_gastos.mapper.CarteiraMapper;
 import com.example.server_gerenciador_gastos.repository.CarteiraRepository;
+import com.example.server_gerenciador_gastos.repository.ContaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,8 @@ public class CarteiraService {
 
     private final CarteiraMapper carteiraMapper;
     private final CarteiraRepository carteiraRepository;
+    @Autowired
+    private ContaRepository contaRepository;
 
     public CarteiraService(CarteiraMapper carteiraMapper, CarteiraRepository carteiraRepository) {
         this.carteiraMapper = carteiraMapper;
@@ -27,10 +32,17 @@ public class CarteiraService {
 
 
     public BaseResponse criarCarteira(CriarCarteiraRequest request) {
+
+        Optional<Conta> contaOptional = contaRepository.findById(request.idConta());
+        if (contaOptional.isEmpty()) {
+            return new BaseResponse("Conta não encontrada.", HttpStatus.BAD_REQUEST, null);
+        }
+
         if (Objects.isNull(request)) {
             return new BaseResponse("Request está nulo.", HttpStatus.NO_CONTENT, null);
         }
         Carteira novaCarteira = CarteiraMapper.map(request);
+        novaCarteira.setConta(contaOptional.get());
         carteiraRepository.save(novaCarteira);
         return new BaseResponse("Carteira criada com sucesso!", HttpStatus.CREATED, novaCarteira);
     }
