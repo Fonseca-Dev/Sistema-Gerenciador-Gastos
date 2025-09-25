@@ -8,9 +8,12 @@ import com.example.server_gerenciador_gastos.entity.Usuario;
 import com.example.server_gerenciador_gastos.repository.ContaRepository;
 import com.example.server_gerenciador_gastos.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
+@Service
 public class ContaService {
     private final UsuarioRepository usuarioRepository;
     private final ContaRepository contaRepository;
@@ -41,5 +44,24 @@ public class ContaService {
         );
 
         return new BaseResponse("Conta criada com sucesso.",HttpStatus.CREATED, response);
+    }
+
+    public BaseResponse listarContas() {
+        if (contaRepository.findAll().isEmpty()) {
+            return new BaseResponse("Nenhuma conta cadastrada.", HttpStatus.NOT_FOUND, null);
+        }
+        return new BaseResponse("Contas cadastradas encontradas.", HttpStatus.OK, contaRepository.findAll());
+    }
+
+    public boolean deletarConta(String id){
+        Optional<Conta> checkId = contaRepository.findById(id);
+
+        if(checkId.isEmpty()){
+            return false;
+        }
+        else {
+            contaRepository.deleteById(id);
+            return true;
+        }
     }
 }
