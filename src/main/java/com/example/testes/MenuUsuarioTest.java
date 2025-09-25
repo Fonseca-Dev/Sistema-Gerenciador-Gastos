@@ -4,12 +4,19 @@ import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
 import com.example.server_gerenciador_gastos.dto.request.CriarTransacaoRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.dto.response.CriarTransacaoResponse;
+import com.example.server_gerenciador_gastos.entity.Carteira;
+import com.example.server_gerenciador_gastos.mapper.CarteiraMapper;
+import com.example.server_gerenciador_gastos.repository.CarteiraRepository;
+import com.example.server_gerenciador_gastos.repository.ContaRepository;
+import com.example.server_gerenciador_gastos.service.CarteiraService;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+
+
 
 public class MenuUsuarioTest {
     private static final String BASE_URL = "http://localhost:8080";
@@ -76,7 +83,7 @@ public class MenuUsuarioTest {
         String idCarteiraOrigem = null;
         String idCarteiraDestino = null;
 
-        while (opcao > 5) {
+        while (opcao > 5 || opcao < 1) {
             System.out.println("    1 - DEPOSITO NA CONTA");
             System.out.println("    2 - SAQUE NA CONTA");
             System.out.println("    3 - DEPOSITO PARA CARTEIRA");
@@ -269,12 +276,11 @@ public class MenuUsuarioTest {
 
         CriarCarteiraRequest request = new CriarCarteiraRequest(nomeCarteira, BigDecimal.valueOf(0), metaCarteira, idConta);
 
-        /// otros bgl
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<CriarCarteiraRequest> entity = new HttpEntity<>(request, headers);
+
 
         try {
             ResponseEntity<BaseResponse> response = restTemplate.postForEntity(
@@ -285,7 +291,6 @@ public class MenuUsuarioTest {
             System.out.println("Resposta: " + response.getBody());
 
         } catch (Exception e) {
-            // Captura qualquer outro erro inesperado
             System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
         }
 
@@ -297,10 +302,10 @@ public class MenuUsuarioTest {
     }
 
 
-    private static void buscarCarteirasPorConta(){ /// n ta funcionando
+    private static void buscarCarteirasPorConta(){
         System.out.print("ID da conta: ");
         String id = sc.nextLine();
-        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/contas/"+id+"/carteiras", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/carteiras/contas/"+id, String.class);
         System.out.println(response.getBody());
     }
     private static void deletarCarteira(){

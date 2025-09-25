@@ -56,4 +56,9 @@ public class CarteiraController {
     public void delete(@PathVariable String id) {
         carteiraService.deleteCarteira(id);
     }
+
+    @GetMapping("/contas/{id}")
+    public ResponseEntity<BaseResponse> buscarCarteirasPorConta(@PathVariable String id){
+        return ResponseEntity.ok(carteiraService.listarCarteirasPorConta(id));
+    }
 }
