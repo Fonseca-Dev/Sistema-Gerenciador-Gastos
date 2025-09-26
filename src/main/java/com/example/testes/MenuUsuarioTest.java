@@ -1,6 +1,7 @@
 package com.example.testes;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarCarteiraRequest;
+import com.example.server_gerenciador_gastos.dto.request.CriarContaRequest;
 import com.example.server_gerenciador_gastos.dto.request.CriarTransacaoRequest;
 import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.dto.response.CriarTransacaoResponse;
@@ -43,6 +44,10 @@ public class MenuUsuarioTest {
                 System.out.println("11 - Listar carteiras");
                 System.out.println("12 - Buscar carteiras por conta");
                 System.out.println("13 - Deletar carteiras");
+                System.out.println("14 - Criar conta");
+                System.out.println("15 - Deletar conta");
+                System.out.println("16 - Listar contas");
+
                 System.out.println("0 - Sair");
                 System.out.print("Escolha: ");
                 opcao = sc.nextInt();
@@ -62,6 +67,9 @@ public class MenuUsuarioTest {
                     case 11 -> listarCarteiras();
                     case 12 -> buscarCarteirasPorConta();
                     case 13 -> deletarCarteira();
+                    case 14 -> criarConta();
+                    case 15 -> deletarConta();
+                    case 16 -> buscarContas();
                     case 0 -> System.out.println("Saindo...");
                     default -> System.out.println("Opcao invalida!");
                 }
@@ -175,7 +183,6 @@ public class MenuUsuarioTest {
             System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
         }
     }
-
 
     private static void listarTransacoesPorConta() {
         System.out.print("ID da conta: ");
@@ -301,17 +308,55 @@ public class MenuUsuarioTest {
         System.out.println(response.getBody());
     }
 
-
     private static void buscarCarteirasPorConta(){
         System.out.print("ID da conta: ");
         String id = sc.nextLine();
         ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/carteiras/contas/"+id, String.class);
         System.out.println(response.getBody());
     }
+
     private static void deletarCarteira(){
         System.out.print("Id da carteira: ");
         String id = sc.nextLine();
         restTemplate.delete(BASE_URL + "/carteiras/" + id);
-        System.out.println("Usuário deletado (se existia).");
+        System.out.println("Carteira deletada (se existia).");
     }
+
+    private static void criarConta(){
+        System.out.print("ID do usuário: ");
+        String id = sc.nextLine();
+        CriarContaRequest request = new CriarContaRequest(BigDecimal.valueOf(0),"Conta Corrente", id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<CriarContaRequest> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<BaseResponse> response = restTemplate.postForEntity(
+                    BASE_URL + "/contas",
+                    entity,
+                    BaseResponse.class
+            );
+            System.out.println("Resposta: " + response.getBody());
+
+        } catch (Exception e) {
+            System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
+        }
+
+    }
+
+    private static void buscarContas(){
+        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/contas", String.class);
+        System.out.println(response.getBody());
+    }
+
+    private static void deletarConta(){
+        System.out.print("Id da conta: ");
+        String id = sc.nextLine();
+        restTemplate.delete(BASE_URL + "/contas/" + id);
+        System.out.println("Conta deletada (se existia).");
+    }
+
+
 }
