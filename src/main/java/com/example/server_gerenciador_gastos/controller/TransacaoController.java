@@ -1,6 +1,7 @@
 package com.example.server_gerenciador_gastos.controller;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarTransacaoRequest;
+import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.dto.response.CriarTransacaoResponse;
 import com.example.server_gerenciador_gastos.dto.response.ListarTransacoesResponse;
 import com.example.server_gerenciador_gastos.service.TransacaoService;
@@ -55,4 +56,32 @@ public class TransacaoController {
         }
         return ResponseEntity.status(status).body(response);
     }
+
+    @GetMapping("/carteira/{id}")
+    public ResponseEntity<ListarTransacoesResponse> ListarTransacoesPorCarteira(@PathVariable String idCarteira){
+        ListarTransacoesResponse response = service.ListarTransacoesPorCarteira(idCarteira);
+        HttpStatus status = null;
+        if(response.mensagem().equals("Transações encontradas nessa carteira.")){
+            status = HttpStatus.OK;
+        }
+        else {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status).body(response);
+
+    }
+
+    @GetMapping("/categoria/{idCategoria}")
+    public ResponseEntity<ListarTransacoesResponse> transacoesPorCategoria(@PathVariable String idCategoria){
+        ListarTransacoesResponse response = service.transacoesPorCategoria(idCategoria);
+        HttpStatus status = null;
+        if(response.mensagem().equals("Transações encontradas.")){
+            status = HttpStatus.OK;
+        }
+        else {
+            status = HttpStatus.NOT_FOUND;
+        }
+        return ResponseEntity.status(status).body(response);
+    }
+    
 }

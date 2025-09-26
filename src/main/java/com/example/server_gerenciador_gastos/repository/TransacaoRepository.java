@@ -13,4 +13,6 @@ public interface TransacaoRepository extends JpaRepository<Transacao,String> {
 
     // Todas as transações em que uma carteira foi usada
     List<Transacao> findByCarteiraId(String idCarteira);
+
+    List<Transacao> findByCategoria_Id(String idCategoria);
 }

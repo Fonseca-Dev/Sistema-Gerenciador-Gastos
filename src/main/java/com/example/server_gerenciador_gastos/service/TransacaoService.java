@@ -1,17 +1,21 @@
 package com.example.server_gerenciador_gastos.service;
 
 import com.example.server_gerenciador_gastos.dto.request.CriarTransacaoRequest;
+import com.example.server_gerenciador_gastos.dto.response.BaseResponse;
 import com.example.server_gerenciador_gastos.dto.response.CriarTransacaoResponse;
 import com.example.server_gerenciador_gastos.dto.response.ListarTransacoesResponse;
 import com.example.server_gerenciador_gastos.entity.*;
 import com.example.server_gerenciador_gastos.repository.CarteiraRepository;
+import com.example.server_gerenciador_gastos.repository.CategoriaRepository;
 import com.example.server_gerenciador_gastos.repository.ContaRepository;
 import com.example.server_gerenciador_gastos.repository.TransacaoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -21,13 +25,16 @@ public class TransacaoService {
     private final ContaRepository contaRepository;
     private final TransacaoRepository transacaoRepository;
 
-    public TransacaoService(
-            CarteiraRepository carteiraRepository,
-            ContaRepository contaRepository,
-            TransacaoRepository transacaoRepository) {
+    private final CategoriaRepository categoriaRepository;
+
+    public TransacaoService(CarteiraRepository carteiraRepository,
+                            ContaRepository contaRepository,
+                            TransacaoRepository transacaoRepository,
+                            CategoriaRepository categoriaRepository) {
         this.carteiraRepository = carteiraRepository;
         this.contaRepository = contaRepository;
         this.transacaoRepository = transacaoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     //CREATE
@@ -76,7 +83,7 @@ public class TransacaoService {
                 if (carteiraDestino == null) {
                     return new CriarTransacaoResponse("CARTEIRA_DESTINO_NAO_ENCONTRADA", null);
                 }
-                transacao.processarContaParaCarteira(contaOrigem,carteiraDestino);
+                transacao.processarContaParaCarteira(contaOrigem, carteiraDestino);
                 break;
             }
             case "CARTEIRA_CONTA": {
@@ -94,7 +101,7 @@ public class TransacaoService {
                 if (contaDestino == null) {
                     return new CriarTransacaoResponse("CONTA_DESTINO_NAO_ENCONTRADA", null);
                 }
-                transacao.processarCarteiraParaConta(carteiraOrigem,contaDestino);
+                transacao.processarCarteiraParaConta(carteiraOrigem, contaDestino);
                 break;
             }
             case "TRANSFERENCIA_CONTA": {
@@ -108,8 +115,9 @@ public class TransacaoService {
                 if (request.idContaDestino() == null || request.idContaDestino().isEmpty()) {
                     return new CriarTransacaoResponse("CONTA_DESTINO_OBRIGATORIA", null);
                 }
+                Categoria categoria = categoriaRepository.findByNome(request.nomeCategoria()).orElse(null);
                 Conta contaDestino = contaRepository.findById(request.idContaDestino()).orElse(null);
-                transacao.processarTransferenciaConta(contaOrigem,contaDestino);
+                transacao.processarTransferenciaConta(contaOrigem, contaDestino, categoria);
                 break;
             }
             default:
@@ -138,6 +146,21 @@ public class TransacaoService {
         return new ListarTransacoesResponse("Transações encontradas.", transacoes);
     }
 
+    public ListarTransacoesResponse ListarTransacoesPorCarteira(String idCarteira) {
+        List<Transacao> entradas = transacaoRepository.findByIdContaDestino(idCarteira);
+        List<Transacao> saidas = transacaoRepository.findByIdContaOrigem(idCarteira);
+
+        List<Transacao> todasTransacoes = new ArrayList<>();
+        todasTransacoes.addAll(entradas);
+        todasTransacoes.addAll(saidas);
+
+        if (todasTransacoes.isEmpty()) {
+            return new ListarTransacoesResponse("Nenhuma transação encontrada neste carteira.", null);
+        }
+
+        return new ListarTransacoesResponse("Transações encontradas nessa carteira.", todasTransacoes);
+    }
+
     public ListarTransacoesResponse listarTransacoesPorContaEMes(String idConta, int ano, int mes) {
         List<Transacao> entradas = transacaoRepository.findByIdContaDestino(idConta);
         List<Transacao> saidas = transacaoRepository.findByIdContaOrigem(idConta);
@@ -162,5 +185,14 @@ public class TransacaoService {
                 transacoesFiltradas
         );
     }
+
+    public ListarTransacoesResponse transacoesPorCategoria(String idCategoria) {
+        List<Transacao> transacoes = transacaoRepository.findByCategoria_Id(idCategoria);
+        if (transacoes.isEmpty()) {
+            return new ListarTransacoesResponse("Nenhuma transação encontrada.", null);
+        }
+        return new ListarTransacoesResponse("Transações encontradas.", transacoes);
+    }
+
 
 }

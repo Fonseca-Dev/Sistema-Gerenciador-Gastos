@@ -85,7 +85,7 @@ public class Transacao {
         this.data = LocalDateTime.now();
     }
 
-    public void processarTransferenciaConta(Conta contaOrigem, Conta contaDestino) {
+    public void processarTransferenciaConta(Conta contaOrigem, Conta contaDestino, Categoria categoria) {
         this.tipo = "TRANSFERENCIA_CONTA";
         this.idContaOrigem = contaOrigem.getId();
         this.idContaDestino = contaDestino != null ? contaDestino.getId() : null;
@@ -94,6 +94,7 @@ public class Transacao {
             contaDestino.setSaldo(contaDestino.getSaldo().add(this.valor));
         }
         this.data = LocalDateTime.now();
+        this.categoria = categoria;
     }
 
 }
