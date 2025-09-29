@@ -10,7 +10,7 @@ public class CategoriaDTO {
     public CategoriaDTO(String id, String nome, List<String> transactionIds) {
         this.id = id;
         this.nome = nome;
-        transactionIds = transactionIds;
+        this.transactionIds = transactionIds;
     }
 
     public String getId() {

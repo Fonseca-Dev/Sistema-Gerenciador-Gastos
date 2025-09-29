@@ -12,7 +12,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class MenuUsuarioTest {
-    private static final String BASE_URL = "http://localhost:8080";
+   /* private static final String BASE_URL = "http://localhost:8080";
     private static final RestTemplate restTemplate = new RestTemplate();
     private static final Scanner sc = new Scanner(System.in);
 
@@ -324,5 +324,5 @@ public class MenuUsuarioTest {
     private static void listarCategoriasRegistradas() {
         ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/categorias", String.class);
         System.out.println("Categorias: " + response.getBody());
-    }
+    }*/
 }
