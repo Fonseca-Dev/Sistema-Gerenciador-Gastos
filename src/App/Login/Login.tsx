@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import backgroundImage from "../../assets/images/ChatGPT Image 4 de set. de 2025, 23_53_18 1.png";
+import backgroundImage from "../../assets/images/background.png";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
