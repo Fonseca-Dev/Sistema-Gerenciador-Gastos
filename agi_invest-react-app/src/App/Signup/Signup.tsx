@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { criarUsuario } from "../services/usuarioService";
+
 
 const Cadastro: React.FC = () => {
   const navigate = useNavigate();
@@ -27,20 +29,38 @@ const Cadastro: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (senha !== confirmarSenha) {
-      alert("As senhas não coincidem!");
-      return;
-    }
-    console.log("Cadastro realizado:", { nome, email, senha });
+  onst handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    // Salvar o nome do usuário no localStorage
-    localStorage.setItem('userName', nome);
+  if (senha !== confirmarSenha) {
+    alert("As senhas não coincidem!");
+    return;
+  }
+
+  try {
+    const novoUsuario = {
+      nome,
+      email,
+      senha
+    };
+
+    const resposta = await criarUsuario(novoUsuario);
+    console.log("Usuário criado:", resposta);
 
     alert("Cadastro realizado com sucesso!");
-    navigate("/login");
-  };
+
+    // Salvar avatar e nome localmente (opcional)
+    localStorage.setItem("userName", nome);
+    if (avatarImage) {
+      localStorage.setItem("userAvatar", avatarImage);
+    }
+
+    navigate("/login"); // redireciona para login
+  } catch (err: any) {
+    console.error(err);
+    alert(err.message || "Erro ao criar usuário");
+  }
+};
 
   return (
     <div
@@ -306,3 +326,4 @@ const Cadastro: React.FC = () => {
 };
 
 export default Cadastro;
+
