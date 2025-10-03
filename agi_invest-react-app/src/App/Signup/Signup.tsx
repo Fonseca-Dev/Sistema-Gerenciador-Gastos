@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { criarUsuario } from "../services/usuarioService.ts";
+import { criarUsuario } from "../../services/usuarioService";
+
 
 const Cadastro: React.FC = () => {
   const navigate = useNavigate();
@@ -282,4 +283,5 @@ const Cadastro: React.FC = () => {
 };
 
 export default Cadastro;
+
 
