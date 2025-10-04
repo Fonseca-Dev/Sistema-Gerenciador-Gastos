@@ -27,9 +27,15 @@ const Home: React.FC = () => {
           return res.json();
         })
         .then((data) => {
+          console.log("Resposta da API:", data);
+        
           if (data && data.objeto && data.objeto.length > 0) {
-            const ultimaConta = data.objeto[data.objeto.length - 1]; // última conta
-            setSaldo(ultimaConta.saldo);
+            const conta = data.objeto[data.objeto.length - 1]; // última conta
+            console.log("Última conta:", conta);
+            setUltimaConta(conta);
+            setSaldo(conta.saldo);
+          } else {
+            console.warn("Nenhuma conta encontrada");
           }
         })
         .catch((err) => console.error("Erro ao carregar saldo:", err));
@@ -495,3 +501,4 @@ const Home: React.FC = () => {
 
 
 export default Home;
+
