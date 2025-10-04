@@ -21,7 +21,7 @@ const Home: React.FC = () => {
     const usuarioId = localStorage.getItem("usuarioId");
     if (usuarioId) {
       fetch(
-        `http://localhost:8080/usuarios/${usuarioId}/contas`
+        `https://sistema-gastos-694972193726.southamerica-east1.run.app/usuarios/${usuarioId}/contas`
       )
         .then((res) => {
           if (!res.ok) throw new Error("Erro ao buscar contas");
@@ -497,5 +497,6 @@ const Home: React.FC = () => {
 
 
 export default Home;
+
 
 
