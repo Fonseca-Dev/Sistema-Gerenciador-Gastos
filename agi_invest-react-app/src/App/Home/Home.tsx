@@ -7,6 +7,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [showBalance, setShowBalance] = React.useState(false);
   const [saldo, setSaldo] = React.useState<number | null>(null);
+  const [ultimaConta, setUltimaConta] = React.useState<any | null>(null);
 
   const [userAvatar, setUserAvatar] = React.useState<string | null>(() => {
     return localStorage.getItem("userAvatar") || null;
@@ -496,4 +497,5 @@ const Home: React.FC = () => {
 
 
 export default Home;
+
 
