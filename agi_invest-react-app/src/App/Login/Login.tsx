@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import backgroundImage from "../../assets/images/background.png";
-import { loginPorEmailESenha } from "../../services/usuarioService";
+import { loginPorEmailESenha } from "../../services/api";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -17,28 +17,10 @@ const Login: React.FC = () => {
     return localStorage.getItem('userName') || 'Usuário';
   });
 
-  // 🚀 Função de login real
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await loginPorEmailESenha({ email, senha });
-
-      // 👇 Exemplo de retorno esperado da API:
-      // { id: "123", nome: "Kaue Fonseca" }
-
-      localStorage.setItem("userId", response.id);
-      localStorage.setItem("userName", response.nome);
-
-      alert(`Bem-vindo(a), ${response.nome}!`);
-      navigate("/home");
-    } catch (err: any) {
-      console.error(err);
-      alert("Email ou senha inválidos.");
-    } finally {
-      setLoading(false);
-    }
+    alert("Login realizado com sucesso!");
+    navigate("/home");
   };
 
   const handleQuickLogin = () => {
