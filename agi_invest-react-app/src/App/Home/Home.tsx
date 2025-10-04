@@ -166,7 +166,6 @@ const Home: React.FC = () => {
                   display: "inline-block",
                 }}
               >
-                R$
                 {showBalance
                   ? "•••••"
                   : saldo !== null
@@ -497,6 +496,7 @@ const Home: React.FC = () => {
 
 
 export default Home;
+
 
 
 
