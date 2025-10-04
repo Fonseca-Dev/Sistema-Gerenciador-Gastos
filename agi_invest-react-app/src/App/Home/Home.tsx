@@ -20,22 +20,17 @@ const Home: React.FC = () => {
     const usuarioId = localStorage.getItem("usuarioId");
     if (usuarioId) {
       fetch(
-        `https://sistema-gastos-694972193726.southamerica-east1.run.app/usuarios/${usuarioId}/contas`
+        `http://localhost:8080/usuarios/${usuarioId}/contas`
       )
         .then((res) => {
           if (!res.ok) throw new Error("Erro ao buscar contas");
           return res.json();
         })
         .then((data) => {
-          console.log("Resposta da API:", data);
-        
           if (data && data.objeto && data.objeto.length > 0) {
             const conta = data.objeto[data.objeto.length - 1]; // última conta
-            console.log("Última conta:", conta);
             setUltimaConta(conta);
             setSaldo(conta.saldo);
-          } else {
-            console.warn("Nenhuma conta encontrada");
           }
         })
         .catch((err) => console.error("Erro ao carregar saldo:", err));
