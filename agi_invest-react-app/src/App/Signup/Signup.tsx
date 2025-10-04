@@ -44,15 +44,15 @@ const Cadastro: React.FC = () => {
     try {
       const novoUsuario = { nome, email, senha };
       const resposta = await criarUsuario(novoUsuario);
-
+    
       console.log("Usuário criado:", resposta);
-
+    
       alert(resposta.message || "Cadastro realizado com sucesso!");
-
-      // Salvar nome e avatar localmente
-      localStorage.setItem("userName", nome);
+    
+      // Salvar nome e avatar localmente usando o que veio da API
+      localStorage.setItem("userName", resposta.nome);
       if (avatarImage) localStorage.setItem("userAvatar", avatarImage);
-
+    
       navigate("/login"); // redireciona para login
     } catch (err: any) {
       console.error(err);
@@ -60,7 +60,7 @@ const Cadastro: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+
 
   return (
     <div
@@ -283,5 +283,6 @@ const Cadastro: React.FC = () => {
 };
 
 export default Cadastro;
+
 
 
