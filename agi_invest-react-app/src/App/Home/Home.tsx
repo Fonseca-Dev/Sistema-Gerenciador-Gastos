@@ -6,26 +6,48 @@ import Menubar from "../Menubar/Menubar";
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [showBalance, setShowBalance] = React.useState(false);
+  const [saldo, setSaldo] = React.useState<number | null>(null);
+
   const [userAvatar, setUserAvatar] = React.useState<string | null>(() => {
-    return localStorage.getItem('userAvatar') || null;
+    return localStorage.getItem("userAvatar") || null;
   });
   const [userName, setUserName] = React.useState<string>(() => {
-    return localStorage.getItem('userName') || 'Usuário';
+    return localStorage.getItem("userName") || "Usuário";
   });
 
-  // Escutar mudanças no localStorage para atualizar o avatar em tempo real
+  // Buscar saldo da última conta
+  React.useEffect(() => {
+    const usuarioId = localStorage.getItem("usuarioId");
+    if (usuarioId) {
+      fetch(
+        `https://sistema-gastos-694972193726.southamerica-east1.run.app/usuarios/${usuarioId}/contas`
+      )
+        .then((res) => {
+          if (!res.ok) throw new Error("Erro ao buscar contas");
+          return res.json();
+        })
+        .then((data) => {
+          if (data && data.objeto && data.objeto.length > 0) {
+            const ultimaConta = data.objeto[data.objeto.length - 1]; // última conta
+            setSaldo(ultimaConta.saldo);
+          }
+        })
+        .catch((err) => console.error("Erro ao carregar saldo:", err));
+    }
+  }, []);
+
+  // Escutar mudanças no localStorage para avatar/nome
   React.useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'userAvatar') {
+      if (e.key === "userAvatar") {
         setUserAvatar(e.newValue);
       }
-      if (e.key === 'userName') {
-        setUserName(e.newValue || 'Usuário');
+      if (e.key === "userName") {
+        setUserName(e.newValue || "Usuário");
       }
     };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const handleProfileClick = () => {
@@ -34,70 +56,70 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div style={{
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-        width: '393px',
-        height: '852px',
-        display: 'flex',
-        flexDirection: 'column',
-        overflowY: 'auto',
-        boxSizing: 'border-box',
-
-        
-        /* Ocultar barra de scroll mantendo funcionalidade */
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-      } as React.CSSProperties}>
-        
+      <div
+        style={{
+          position: "absolute",
+          top: "0px",
+          left: "0px",
+          width: "393px",
+          height: "852px",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "auto",
+          boxSizing: "border-box",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        } as React.CSSProperties}
+      >
         {/* Header/card azul */}
-        <div style={{
-          position: 'fixed',
-          top: '0px',
-          bottom: '0px',
-          width: '393px',
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '16px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          zIndex: 1000
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '32px', // distancia entre engrenagem e perfil
-            marginTop: '20px' //  empurra os ícones para baixo
-          }}>
-
+        <div
+          style={{
+            position: "fixed",
+            top: "0px",
+            bottom: "0px",
+            width: "393px",
+            backgroundColor: "#2563eb",
+            color: "white",
+            padding: "16px",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "32px",
+              marginTop: "20px",
+            }}
+          >
             <Settings size={26} />
-
-            <div style={{ display: 'flex', gap: '22px' }}>
+            <div style={{ display: "flex", gap: "22px" }}>
               <MessageCircle size={26} />
               <Bell size={26} />
             </div>
           </div>
 
           {/* Perfil */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <button
               onClick={handleProfileClick}
               style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                border: '2px solid white',
-                backgroundColor: userAvatar ? 'transparent' : '#1e40af',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                color: 'white',
-                overflow: 'hidden',
-                padding: 0
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
+                border: "2px solid white",
+                backgroundColor: userAvatar ? "transparent" : "#1e40af",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "20px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                color: "white",
+                overflow: "hidden",
+                padding: 0,
               }}
             >
               {userAvatar ? (
@@ -105,59 +127,80 @@ const Home: React.FC = () => {
                   src={userAvatar}
                   alt="Avatar do usuário"
                   style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    objectPosition: 'center'
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center",
                   }}
                 />
               ) : (
                 userName.charAt(0).toUpperCase()
               )}
             </button>
-            <p style={{ fontSize: '18px', fontWeight: '500', margin: 0 }}>Olá, {userName}!</p>
+            <p style={{ fontSize: "18px", fontWeight: "500", margin: 0 }}>
+              Olá, {userName}!
+            </p>
           </div>
 
           {/* Saldo */}
-          <div style={{ marginTop: '0px', position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
-              <div style={{ 
-                fontSize: '32px',
-                fontWeight: 'bold', 
-                margin: 0,
-                lineHeight: '1.2',
-                color: 'white',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                whiteSpace: 'nowrap', // impede quebra de linha
-                display: 'inline-block'
-              }}>
-                R${showBalance ? "•••••" : "1.234,56"}
+          <div style={{ marginTop: "0px", position: "relative" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                flexWrap: "nowrap",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "32px",
+                  fontWeight: "bold",
+                  margin: 0,
+                  lineHeight: "1.2",
+                  color: "white",
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                  whiteSpace: "nowrap",
+                  display: "inline-block",
+                }}
+              >
+                R$
+                {showBalance
+                  ? "•••••"
+                  : saldo !== null
+                  ? saldo.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })
+                  : "Carregando..."}
               </div>
-              <button 
+              <button
                 onClick={() => setShowBalance(!showBalance)}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center'
+                  background: "none",
+                  border: "none",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 {showBalance ? <EyeOff size={22} /> : <Eye size={22} />}
               </button>
             </div>
-            <button style={{
-              fontSize: '14px',
-              textDecoration: 'underline',
-              background: 'none',
-              border: 'none',
-              color: 'white',
-              cursor: 'pointer',
-              position: 'absolute',
-              left: '170px',
-              top: '50px'
-            }}>
+            <button
+              style={{
+                fontSize: "14px",
+                textDecoration: "underline",
+                background: "none",
+                border: "none",
+                color: "white",
+                cursor: "pointer",
+                position: "absolute",
+                left: "170px",
+                top: "50px",
+              }}
+            >
               Ver extrato
             </button>
           </div>
@@ -449,5 +492,6 @@ const Home: React.FC = () => {
     </>
   );
 };
+
 
 export default Home;
