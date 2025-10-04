@@ -13,7 +13,7 @@ const Home: React.FC = () => {
     return localStorage.getItem("userAvatar") || null;
   });
   const [userName, setUserName] = React.useState<string>(() => {
-    return localStorage.getItem("userName") || "Usuário";
+    return localStorage.getItem("usuarioNome") || "Usuário";
   });
 
   // Buscar saldo da última conta
@@ -497,6 +497,7 @@ const Home: React.FC = () => {
 
 
 export default Home;
+
 
 
 
