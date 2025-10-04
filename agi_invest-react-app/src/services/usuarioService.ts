@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "https://sistema-gerenciador-gastos.vercel.app/";
 
 export async function criarUsuario(dados: { nome: string; email: string; senha: string }) {
   const resp = await fetch(`${BASE_URL}/usuarios`, {
