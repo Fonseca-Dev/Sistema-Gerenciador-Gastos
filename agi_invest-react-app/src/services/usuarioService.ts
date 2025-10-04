@@ -1,4 +1,4 @@
-const BASE_URL = "https://sistema-gastos-694972193726.southamerica-east1.run.app";
+const BASE_URL = "http://localhost:8080";
 
 export async function criarUsuario(dados: { nome: string; email: string; senha: string }) {
   const resp = await fetch(`${BASE_URL}/usuarios`, {
