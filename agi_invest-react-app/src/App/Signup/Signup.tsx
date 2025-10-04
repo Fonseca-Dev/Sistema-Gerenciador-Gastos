@@ -50,8 +50,8 @@ const Cadastro: React.FC = () => {
       alert(resposta.message || "Cadastro realizado com sucesso!");
     
       // Salvar nome e avatar localmente usando o que veio da API
-      localStorage.setItem("userName", resposta.objeto.nome);
-      localStorage.setItem("userID", resposta.objeto.id);
+      localStorage.setItem("usuarioNome", resposta.objeto.nome);
+      localStorage.setItem("usuarioId", resposta.objeto.id);
       
       if (avatarImage) localStorage.setItem("userAvatar", avatarImage);
     
@@ -286,6 +286,7 @@ const Cadastro: React.FC = () => {
 };
 
 export default Cadastro;
+
 
 
 
