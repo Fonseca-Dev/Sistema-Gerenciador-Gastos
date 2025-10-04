@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   });
 
   const [userName] = useState<string>(() => {
-    return localStorage.getItem('userName') || 'Usuário';
+    return localStorage.getItem('usuarioNome') || 'Usuário';
   });
 
   const handleLogin = (e: React.FormEvent) => {
@@ -276,3 +276,4 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
