@@ -61,6 +61,7 @@ const Cadastro: React.FC = () => {
       setLoading(false);
     }
 
+  };
 
   return (
     <div
@@ -283,6 +284,4 @@ const Cadastro: React.FC = () => {
 };
 
 export default Cadastro;
-
-
 
