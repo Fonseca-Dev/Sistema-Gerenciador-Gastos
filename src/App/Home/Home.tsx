@@ -2,10 +2,12 @@ import React from "react";
 import { Eye, EyeOff, RefreshCcw, Bell, MessageCircle, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Menubar from "../Menubar/Menubar";
+import { useSaldo } from "../../contexts/SaldoContext";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [showBalance, setShowBalance] = React.useState(false);
+  const { saldo, setSaldo } = useSaldo();
   const [userAvatar, setUserAvatar] = React.useState<string | null>(() => {
     return localStorage.getItem('userAvatar') || null;
   });
@@ -30,6 +32,10 @@ const Home: React.FC = () => {
 
   const handleProfileClick = () => {
     navigate("/login");
+  };
+
+  const handleVerExtratoClick = () => {
+    navigate("/extrato");
   };
 
   return (
@@ -131,7 +137,7 @@ const Home: React.FC = () => {
                 whiteSpace: 'nowrap', // impede quebra de linha
                 display: 'inline-block'
               }}>
-                R${showBalance ? "•••••" : "1.234,56"}
+                R${showBalance ? "•••••" : saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
               <button 
                 onClick={() => setShowBalance(!showBalance)}
@@ -147,7 +153,9 @@ const Home: React.FC = () => {
                 {showBalance ? <EyeOff size={22} /> : <Eye size={22} />}
               </button>
             </div>
-            <button style={{
+            <button 
+              onClick={handleVerExtratoClick}
+              style={{
               fontSize: '14px',
               textDecoration: 'underline',
               background: 'none',

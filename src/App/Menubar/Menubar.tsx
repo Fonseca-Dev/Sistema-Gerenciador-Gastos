@@ -1,7 +1,45 @@
 import React from "react";
 import { Home, FileText, CreditCard, User, Wallet } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Menubar: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleHomeClick = () => {
+    navigate("/home");
+  };
+
+  const handleExtratoClick = () => {
+    navigate("/extrato");
+  };
+
+  const handleContaClick = () => {
+    // Implementar navegação para conta quando a página existir
+    console.log("Conta clicada");
+  };
+
+  const handleCartoesClick = () => {
+    // Implementar navegação para cartões quando a página existir
+    console.log("Cartões clicados");
+  };
+
+  const handlePerfilClick = () => {
+    // Implementar navegação para perfil quando a página existir
+    console.log("Perfil clicado");
+  };
+
+  const getButtonStyle = (path: string) => ({
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    color: location.pathname === path ? '#2563eb' : '#6b7280',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px'
+  });
+
   return (
     <div style={{
       position: 'fixed',
@@ -17,74 +55,29 @@ const Menubar: React.FC = () => {
       justifyContent: 'space-around',
       alignItems: 'center',
       padding: '28px 0',
-      zIndex: 1000
+      zIndex: 9999
     }}>
-      <button style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        color: '#2563eb',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '4px'
-      }}>
+      <button onClick={handleHomeClick} style={getButtonStyle('/home')}>
         <Home size={22} />
         <span style={{ fontSize: '12px', marginTop: '4px' }}>Início</span>
       </button>
 
-      <button style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        color: '#6b7280',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '4px'
-      }}>
+      <button onClick={handleExtratoClick} style={getButtonStyle('/extrato')}>
         <FileText size={22} />
         <span style={{ fontSize: '12px', marginTop: '4px' }}>Extrato</span>
       </button>
 
-      <button style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        color: '#6b7280',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '4px'
-      }}>
+      <button onClick={handleContaClick} style={getButtonStyle('/conta')}>
         <Wallet size={22} />
         <span style={{ fontSize: '12px', marginTop: '4px' }}>Conta</span>
       </button>
 
-      <button style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        color: '#6b7280',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '4px'
-      }}>
+      <button onClick={handleCartoesClick} style={getButtonStyle('/cartoes')}>
         <CreditCard size={22} />
         <span style={{ fontSize: '12px', marginTop: '4px' }}>Cartões</span>
       </button>
 
-      <button style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        color: '#6b7280',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        padding: '4px'
-      }}>
+      <button onClick={handlePerfilClick} style={getButtonStyle('/perfil')}>
         <User size={22} />
         <span style={{ fontSize: '12px', marginTop: '4px' }}>Perfil</span>
       </button>
